@@ -1,6 +1,6 @@
 from models import *
 
-# Get user's choice
+# Function to get the user's model choice
 def get_user_choice(num_options):
     while True:
         try:
@@ -12,11 +12,22 @@ def get_user_choice(num_options):
         except ValueError:
             print("Invalid input. Please enter a valid number.")
 
+# Function to display the available models
+def display_models(models):
+    print("Available models:")
+    for i, model in enumerate(models, 1):
+        print(f"{i}. {model}")
+
+# Function to perform model selection and train-test split
 def model_select(df):
     continue_splitting = True
     
     while continue_splitting:
-        # Perform train-test split
+        # Print the columns before asking for the target column
+        print("Available columns in the DataFrame:")
+        print(df.columns)
+
+        # Ask user if they want to perform a train-test split
         user_response = input("Do you want to perform a train-test split? (yes/no): ").strip().lower()
         if user_response == 'yes':
             target_column = input("Enter the name of the target column for the split: ").strip()
@@ -24,6 +35,7 @@ def model_select(df):
                 print(f"Column '{target_column}' not found in the dataset. Please try again.")
                 continue
 
+            # Get test size from user
             test_size = float(input("Enter the test size (e.g., 0.2 for 20% test data): ").strip())
             X_train, X_test, y_train, y_test = perform_train_test_split(df, target_column, test_size)
             print("Train-test split performed.")
@@ -35,7 +47,7 @@ def model_select(df):
             print("Train-test split not performed.")
             return
 
-        # Model selection
+        # List of available models
         models = [
             "Decision Tree Classifier",
             "Linear Regression",
@@ -44,13 +56,15 @@ def model_select(df):
             "Decision Tree Regressor",
             "Random Forest Regressor"
         ]
+
+        # Display models to the user
         display_models(models)
         choice = get_user_choice(len(models))
         selected_model = models[choice - 1]
 
         print(f"You selected: {selected_model}")
 
-        # Train and evaluate the model
+        # Train and evaluate the selected model
         if selected_model == "Decision Tree Classifier":
             model = train_decision_tree_classifier(X_train, y_train)
             evaluate_model_classifier(model, X_test, y_test)
@@ -75,7 +89,7 @@ def model_select(df):
             model = train_random_forest_classifier(X_train, y_train)
             evaluate_model_classifier(model, X_test, y_test)
         
-        # Ask the user if they want to perform the split again
+        # Ask if the user wants to perform another train-test split
         repeat_response = input("Do you want to perform another train-test split? (yes/no): ").strip().lower()
         if repeat_response != 'yes':
             continue_splitting = False
